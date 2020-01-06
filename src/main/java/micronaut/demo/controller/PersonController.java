@@ -16,19 +16,14 @@ public class PersonController {
     @Inject
     private PersonService personService;
 
-    @Get("/")
-    public HttpStatus index() {
-        return HttpStatus.OK;
+    @Get
+    public Collection<Person> getPersons() {
+        return personService.getAllPersons();
     }
 
     @Post("/add")
     public HttpStatus addPerson(@Body Person person) {
         personService.addPerson(person);
         return HttpStatus.CREATED;
-    }
-
-    @Get("/get")
-    public Collection<Person> getPersons() {
-        return personService.getAllPersons();
     }
 }

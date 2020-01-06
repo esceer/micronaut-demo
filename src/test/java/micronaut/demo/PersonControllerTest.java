@@ -1,16 +1,15 @@
 package micronaut.demo;
 
-import io.micronaut.context.ApplicationContext;
-import io.micronaut.http.HttpStatus;
-import io.micronaut.http.client.RxHttpClient;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+
 import io.micronaut.runtime.server.EmbeddedServer;
 import io.micronaut.test.annotation.MicronautTest;
-
-import org.junit.jupiter.api.Test;
-
 import javax.inject.Inject;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import micronaut.demo.client.PersonClient;
+import micronaut.demo.model.Person;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
 
 @MicronautTest
 public class PersonControllerTest {
@@ -18,10 +17,19 @@ public class PersonControllerTest {
     @Inject
     EmbeddedServer embeddedServer;
 
+    @Inject
+    PersonClient personClient;
+
     @Test
-    public void testIndex() throws Exception {
-        try(RxHttpClient client = embeddedServer.getApplicationContext().createBean(RxHttpClient.class, embeddedServer.getURL())) {
-            assertEquals(HttpStatus.OK, client.toBlocking().exchange("/person").status());
-        }
+    public void testGetAllPersons() {
+        Person person = new Person();
+        person.setId(1);
+        person.setName("Test Person");
+        person.setSalary(10000);
+
+        personClient.addPerson(person);
+
+        assertThat(personClient.getPersons(), hasSize(1));
+        assertThat(personClient.getPersons(), Matchers.hasItem(person));
     }
 }
